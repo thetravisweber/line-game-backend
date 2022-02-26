@@ -1,0 +1,14 @@
+{
+  "name": "line-game-backend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "serve": "nodemon app.js"
+  },
+  "author": "travisweber",
+  "license": "MIT",
+  "dependencies": {
+    "nodemon": "^2.0.15",
+    "ws": "^8.5.0"
+  }
+}
