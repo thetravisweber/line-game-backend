@@ -20,7 +20,6 @@ wss.on('connection', (ws) => {
 
   ws.on('message', (message) => {
     const metadata = clients.get(ws);
-    const sender = metadata.id;
 
     if (message == "b") {
       if (metadata.shorts.length == 0) {
@@ -32,6 +31,8 @@ wss.on('connection', (ws) => {
         metadata.shorts.splice(0, 1); 
       }
       price+=10;
+      scoreUpdate(metadata);
+      return;
     } else if (message == "s") {
       if (metadata.shares.length == 0) {
         metadata.shorts.push(price);
@@ -42,19 +43,16 @@ wss.on('connection', (ws) => {
         metadata.shares.splice(0, 1);
       }
       price-=10;
+      scoreUpdate(metadata);
+      return;
     }
 
-    clients.set(ws, metadata);
-
-    const leaderboard = calculateLeaderboard()
-
-    returnData = {
-      "p": price,
-      "s": metadata.score,
-      "l": leaderboard
-    };
-
-    blast(returnData);
+    const parsed = JSON.parse(message);
+    if (!!parsed.name) {
+      metadata.name = parsed.name;
+      clients.set(ws, metadata);
+      ws.send(generalResponse(metadata));
+    }
   });
 
   ws.on("close", () => {
@@ -62,6 +60,24 @@ wss.on('connection', (ws) => {
     console.log("connection closed");
   });
 });
+
+function scoreUpdate(metadata) {
+  clients.set(ws, metadata);
+
+  response = generalResponse(metadata);
+
+  blast(response);
+}
+
+function generalResponse(metadata) {
+  const leaderboard = calculateLeaderboard()
+
+  return {
+    "p": price,
+    "s": metadata.score,
+    "l": leaderboard
+  };
+}
 
 function blast(data) {
   [...clients.keys()].forEach((client) => {
