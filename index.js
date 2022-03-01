@@ -26,7 +26,7 @@ wss.on('connection', (ws) => {
         metadata.shares.push(price);
       } else {
         metadata.shorts = averageOwnerships(metadata.shorts);
-        metadata.score += price - metadata.shorts[0];
+        metadata.score += metadata.shorts[0] - price;
         // remove 1 positon
         metadata.shorts.splice(0, 1); 
       }
@@ -45,17 +45,12 @@ wss.on('connection', (ws) => {
 
     clients.set(ws, metadata);
 
-    let allScores = [...clients.values()].map((client) => {
-      return {
-        "n": client.name,
-        "s": client.score
-      };
-    });
+    const leaderboard = calculateLeaderboard()
 
     returnData = {
       "p": price,
       "s": metadata.score,
-      "l": allScores
+      "l": leaderboard
     };
 
     [...clients.keys()].forEach((client) => {
@@ -70,6 +65,15 @@ wss.on('connection', (ws) => {
     console.log("connection closed");
   });
 });
+
+function calculateLeaderboard() {
+  return [...clients.values()].map((client) => {
+    return {
+      "n": client.name,
+      "s": client.score
+    };
+  });
+}
 
 function fakeName() {
   names = ["jake", "john", "jason", "james", "jose", "jorge", "justin", "jesus"];
