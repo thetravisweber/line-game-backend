@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "serve": "nodemon app.js"
+    "serve": "nodemon app.js",
+    "run": "nodemon app.js"
   },
   "author": "travisweber",
   "license": "MIT",
