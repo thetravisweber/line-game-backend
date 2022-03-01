@@ -31,7 +31,7 @@ wss.on('connection', (ws) => {
         metadata.shorts.splice(0, 1); 
       }
       price+=10;
-      scoreUpdate(metadata);
+      scoreUpdate(ws, metadata);
       return;
     } else if (message == "s") {
       if (metadata.shares.length == 0) {
@@ -43,7 +43,7 @@ wss.on('connection', (ws) => {
         metadata.shares.splice(0, 1);
       }
       price-=10;
-      scoreUpdate(metadata);
+      scoreUpdate(ws, metadata);
       return;
     }
 
@@ -61,7 +61,7 @@ wss.on('connection', (ws) => {
   });
 });
 
-function scoreUpdate(metadata) {
+function scoreUpdate(ws, metadata) {
   clients.set(ws, metadata);
 
   response = generalResponse(metadata);
