@@ -51,7 +51,8 @@ wss.on('connection', (ws) => {
     if (!!parsed.name) {
       metadata.name = parsed.name;
       clients.set(ws, metadata);
-      ws.send(generalResponse(metadata));
+      const resp = generalResponse(metadata);
+      ws.send(JSON.stringify(resp));
     }
   });
 
