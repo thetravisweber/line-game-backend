@@ -7,9 +7,11 @@ let price = 100;
 
 wss.on('connection', (ws) => {
   const id = uuidv4();
-  const ownerShips = [];
+  const name = fakeName();
+  const shares = [];
+  const shorts = [];
   const score = 0;
-  const metadata = { id, ownerShips, score };
+  const metadata = { id, name, shares, shorts, score };
 
   clients.set(ws, metadata);
 
@@ -20,27 +22,42 @@ wss.on('connection', (ws) => {
     const sender = metadata.id;
 
     if (message == "b") {
-      metadata.ownerShips.push(price);
+      if (metadata.shorts.length == 0) {
+        metadata.shares.push(price);
+      } else {
+        metadata.shorts = averageOwnerships(metadata.shorts);
+        metadata.score += price - metadata.shorts[0];
+        // remove 1 positon
+        metadata.shorts.splice(0, 1); 
+      }
       price+=10;
     } else if (message == "s") {
-      if (metadata.ownerShips.length == 0) {
-        return;
+      if (metadata.shares.length == 0) {
+        metadata.shorts.push(price);
+      } else {
+        metadata.shares = averageOwnerships(metadata.shares);
+        metadata.score += price - metadata.shares[0];
+        // remove 1 positon
+        metadata.shares.splice(0, 1);
       }
-      metadata.ownerShips = averageOwnerships(metadata.ownerShips);
-      metadata.score += price - metadata.ownerShips[0];
-      // remove 1 positon
-      metadata.ownerShips.splice(0, 1);
       price-=10;
     }
 
     clients.set(ws, metadata);
 
+    let allScores = [...clients.values()].map((client) => {
+      return {
+        "n": client.name,
+        "s": client.score
+      };
+    });
+
     returnData = {
       "p": price,
-      "l": metadata.score
+      "s": metadata.score,
+      "l": allScores
     };
 
-    console.log(JSON.stringify(returnData));
     [...clients.keys()].forEach((client) => {
       client.send(
         JSON.stringify(returnData)
@@ -53,6 +70,11 @@ wss.on('connection', (ws) => {
     console.log("connection closed");
   });
 });
+
+function fakeName() {
+  names = ["jake", "john", "jason", "james", "jose", "jorge", "justin", "jesus"];
+  return names[Math.floor(Math.random() * names.length)];
+}
 
 function averageOwnerships(ownerShips) {
   const average = [...ownerShips].reduce((a, b) => a + b) / ownerShips.length;
