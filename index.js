@@ -11,7 +11,8 @@ wss.on('connection', (ws) => {
   const shares = [];
   const shorts = [];
   const score = 0;
-  const metadata = { id, name, shares, shorts, score };
+  const lastMove = 0;
+  const metadata = { id, name, shares, shorts, score, lastMove };
 
   clients.set(ws, metadata);
 
@@ -53,11 +54,7 @@ wss.on('connection', (ws) => {
       "l": leaderboard
     };
 
-    [...clients.keys()].forEach((client) => {
-      client.send(
-        JSON.stringify(returnData)
-      );
-    });
+    blast(returnData);
   });
 
   ws.on("close", () => {
@@ -65,6 +62,14 @@ wss.on('connection', (ws) => {
     console.log("connection closed");
   });
 });
+
+function blast(data) {
+  [...clients.keys()].forEach((client) => {
+    client.send(
+      JSON.stringify(data)
+    );
+  });
+}
 
 function calculateLeaderboard() {
   return [...clients.values()].map((client) => {
