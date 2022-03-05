@@ -30,14 +30,10 @@ wss.on('connection', (ws) => {
         return;
       }
       metadata.lastMove = now;
-      if (metadata.shorts.length == 0) {
-        metadata.shares.push(price);
-      } else {
-        metadata.lastMove = now;
-        metadata.shorts = averageOwnerships(metadata.shorts);
-        metadata.score += metadata.shorts[0] - price;
-        // remove 1 positon
-        metadata.shorts.splice(0, 1); 
+      if (price > 100) {
+        metadata.score -= 10;
+      } else if (price < 100) {
+        metadata.score += 10;
       }
       price+=10;
       scoreUpdate(ws, metadata);
@@ -48,13 +44,10 @@ wss.on('connection', (ws) => {
         return;
       }
       metadata.lastMove = now;
-      if (metadata.shares.length == 0) {
-        metadata.shorts.push(price);
-      } else {
-        metadata.shares = averageOwnerships(metadata.shares);
-        metadata.score += price - metadata.shares[0];
-        // remove 1 positon
-        metadata.shares.splice(0, 1);
+      if (price > 100) {
+        metadata.score += 10;
+      } else if (price < 100) {
+        metadata.score -= 10;
       }
       price-=10;
       scoreUpdate(ws, metadata);
