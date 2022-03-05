@@ -4,7 +4,7 @@ const wss = new WebSocket.Server({ port: process.env.PORT || 5000 });
 const clients = new Map();
 
 // in milliseconds
-const coolDown = 3000;
+const coolDown = 700;
 
 let price = 100;
 
