@@ -3,6 +3,9 @@ const wss = new WebSocket.Server({ port: process.env.PORT || 5000 });
 
 const clients = new Map();
 
+// in milliseconds
+const coolDown = 5000;
+
 let price = 100;
 
 wss.on('connection', (ws) => {
@@ -20,6 +23,12 @@ wss.on('connection', (ws) => {
 
   ws.on('message', (message) => {
     const metadata = clients.get(ws);
+
+    let now = Date.now();
+    if (now - coolDown < metadata.lastMove) {
+      return;
+    }
+    metaData.lastMove = now;
 
     if (message == "b") {
       if (metadata.shorts.length == 0) {
