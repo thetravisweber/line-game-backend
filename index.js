@@ -24,16 +24,18 @@ wss.on('connection', (ws) => {
   ws.on('message', (message) => {
     const metadata = clients.get(ws);
 
-    let now = Date.now();
-    if (now - coolDown < metadata.lastMove) {
-      return;
-    }
-    metaData.lastMove = now;
+    
 
     if (message == "b") {
+      let now = Date.now();
+      if (now - coolDown < metadata.lastMove) {
+        return;
+      }
+      metadata.lastMove = now;
       if (metadata.shorts.length == 0) {
         metadata.shares.push(price);
       } else {
+        metadata.lastMove = now;
         metadata.shorts = averageOwnerships(metadata.shorts);
         metadata.score += metadata.shorts[0] - price;
         // remove 1 positon
@@ -43,6 +45,10 @@ wss.on('connection', (ws) => {
       scoreUpdate(ws, metadata);
       return;
     } else if (message == "s") {
+      let now = Date.now();
+      if (now - coolDown < metadata.lastMove) {
+        return;
+      }
       if (metadata.shares.length == 0) {
         metadata.shorts.push(price);
       } else {
