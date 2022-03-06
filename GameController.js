@@ -12,24 +12,21 @@ class GameController {
   setGame(_game) {
     this.game = _game;
   }
-
+  
   setup() {
     this.wss.on('connection', (ws) => {
       const id = this.uuidv4();
       const metadata = { id};
     
       this.clients.set(ws, metadata);
-    
-      this.game.addPlayer(id);
 
       console.log("connection opened");
     
       ws.on('message', (m) => {this.receivedMessage(m, ws)});
     
       ws.on("close", () => {
-        clients.delete(ws);
+        this.clients.delete(ws);
         console.log("connection closed");
-        console.log(gl.end());
       });
     });
 
@@ -39,45 +36,39 @@ class GameController {
   receivedMessage(message, ws) {
     console.log("message received");
     const metadata = this.clients.get(ws);
+    const id = metadata.id;
     
     if (message == "b") {
-      let now = Date.now();
-      if (now - coolDown < metadata.lastMove) {
-        return;
-      }
-      metadata.lastMove = now;
-      if (price > 100) {
-        metadata.score -= 10;
-      } else if (price < 100) {
-        metadata.score += 10;
-      }
-      price+=10;
-      scoreUpdate(ws, metadata);
+      this.game.playerWantsToBuy(id);
       return;
     } else if (message == "s") {
-      let now = Date.now();
-      if (now - coolDown < metadata.lastMove) {
-        return;
-      }
-      metadata.lastMove = now;
-      if (price > 100) {
-        metadata.score += 10;
-      } else if (price < 100) {
-        metadata.score -= 10;
-      }
-      price-=10;
-      scoreUpdate(ws, metadata);
+      this.game.playerWantsToSellShort(id);
       return;
     }
 
     const parsed = JSON.parse(message);
     if (!!parsed.name) {
-      metadata.name = parsed.name;
-      this.clients.set(ws, metadata);
-      const resp = this.generalResponse(metadata);
-      resp.n = metadata.name;
-      ws.send(JSON.stringify(resp));
+      let added = this.game.addPlayer(id, parsed.name);
+      if (added) {
+        let leaderBoard = this.game.leaderBoard();
+        ws.send(
+          JSON.stringify(
+            {
+              "n": parsed.name,
+              "l": leaderBoard
+            }
+          )
+        );
+      }
     }
+  }
+
+  blast(data) {
+    [...this.clients.keys()].forEach((client) => {
+      client.send(
+        JSON.stringify(data)
+      );
+    });
   }
 
   uuidv4() {
@@ -85,47 +76,6 @@ class GameController {
       var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
       return v.toString(16);
     });
-  }
-
-  scoreUpdate(ws, metadata) {
-    clients.set(ws, metadata);
-  
-    response = this.generalResponse(metadata);
-  
-    blast(response);
-  }
-  
-  generalResponse(metadata) {
-    const leaderboard = this.calculateLeaderboard()
-  
-    return {
-      "p": price,
-      "s": metadata.score,
-      "l": leaderboard
-    };
-  }
-  
-  blast(data) {
-    [...clients.keys()].forEach((client) => {
-      client.send(
-        JSON.stringify(data)
-      );
-    });
-  }
-  
-  calculateLeaderboard() {
-    return [...this.clients.values()].map((client) => {
-      return {
-        "n": client.name,
-        "s": client.score
-      };
-    });
-  }
-  
-  averageOwnerships(ownerShips) {
-    const average = [...ownerShips].reduce((a, b) => a + b) / ownerShips.length;
-    ownerShips.fill(average);
-    return ownerShips;
   }
 }
 
