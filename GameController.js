@@ -1,11 +1,16 @@
-const state = require("./singletons.js");
 const WebSocket = require('ws');
 class GameController {
   wss = new WebSocket.Server({ port: process.env.PORT || 5000 });
+  clients = new Map();
+  game;
 
   constructor() {
     console.log("Game Controller Created");
     this.setup();
+  }
+
+  setGame(_game) {
+    this.game = _game;
   }
 
   setup() {
@@ -14,15 +19,15 @@ class GameController {
       const name = "";
       const metadata = { id, name};
     
-      clients.set(ws, metadata);
+      this.clients.set(ws, metadata);
     
-      state.game.addPlayer(id);
-      
+      this.game.addPlayer(id);
+
       console.log("connection opened");
     
       ws.on('message', (message) => {
         console.log("message received");
-        const metadata = clients.get(ws);
+        const metadata = this.clients.get(ws);
         
         if (message == "b") {
           let now = Date.now();

@@ -1,6 +1,7 @@
 const gl = require('node-gameloop');
 const NO_GAME_LOOP = -101;
 class LineGame {
+  controller;
   price = 100;
   gameloopId = NO_GAME_LOOP;
   players = {};
@@ -8,6 +9,10 @@ class LineGame {
   constructor() {
     console.log("Line Game Created");
     this.startLoop();
+  }
+
+  setController(_cont) {
+    this.controller = _cont;
   }
 
   addPlayer(id) {
