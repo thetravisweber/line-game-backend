@@ -1,12 +1,11 @@
 const singletons = require("./singletons.js");
 const WebSocket = require('ws');
-
-
 class GameController {
   wss = new WebSocket.Server({ port: process.env.PORT || 5000 });
 
   constructor() {
     console.log("Game Controller Created");
+    this.setup();
   }
 
   setup() {
