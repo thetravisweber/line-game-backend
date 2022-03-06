@@ -1,9 +1,7 @@
-const lg = require('./LineGame.js');
-
-const clientsMap = new Map();
-const MainGame = new lg.LineGame();
+const gc = require("./GameController.js");
+const lg = require("./LineGame.js");
 
 module.exports = {
-  clients: clientsMap,
-  mainGame: MainGame
+  controller: new gc.GameController(),
+  game: new lg.LineGame()
 }
