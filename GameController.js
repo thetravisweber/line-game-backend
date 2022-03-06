@@ -1,4 +1,4 @@
-const singletons = require("./singletons.js");
+const state = require("./singletons.js");
 const WebSocket = require('ws');
 class GameController {
   wss = new WebSocket.Server({ port: process.env.PORT || 5000 });
@@ -12,14 +12,12 @@ class GameController {
     this.wss.on('connection', (ws) => {
       const id = this.uuidv4();
       const name = "";
-      const shares = [];
-      const shorts = [];
-      const score = 0;
-      const lastMove = 0;
-      const metadata = { id, name, shares, shorts, score, lastMove };
+      const metadata = { id, name};
     
       clients.set(ws, metadata);
     
+      state.game.addPlayer(id);
+      
       console.log("connection opened");
     
       ws.on('message', (message) => {

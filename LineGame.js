@@ -3,10 +3,20 @@ const NO_GAME_LOOP = -101;
 class LineGame {
   price = 100;
   gameloopId = NO_GAME_LOOP;
+  players = {};
 
   constructor() {
     console.log("Line Game Created");
     this.startLoop();
+  }
+
+  addPlayer(id) {
+    this.players[id] = {
+      shares: [],
+      shorts: [],
+      profit: 0,
+      lastMove: 0
+    };
   }
 
   startLoop() {
