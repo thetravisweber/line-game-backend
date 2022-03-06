@@ -16,8 +16,7 @@ class GameController {
   setup() {
     this.wss.on('connection', (ws) => {
       const id = this.uuidv4();
-      const name = "";
-      const metadata = { id, name};
+      const metadata = { id};
     
       this.clients.set(ws, metadata);
     
@@ -25,49 +24,7 @@ class GameController {
 
       console.log("connection opened");
     
-      ws.on('message', (message) => {
-        console.log("message received");
-        const metadata = this.clients.get(ws);
-        
-        if (message == "b") {
-          let now = Date.now();
-          if (now - coolDown < metadata.lastMove) {
-            return;
-          }
-          metadata.lastMove = now;
-          if (price > 100) {
-            metadata.score -= 10;
-          } else if (price < 100) {
-            metadata.score += 10;
-          }
-          price+=10;
-          scoreUpdate(ws, metadata);
-          return;
-        } else if (message == "s") {
-          let now = Date.now();
-          if (now - coolDown < metadata.lastMove) {
-            return;
-          }
-          metadata.lastMove = now;
-          if (price > 100) {
-            metadata.score += 10;
-          } else if (price < 100) {
-            metadata.score -= 10;
-          }
-          price-=10;
-          scoreUpdate(ws, metadata);
-          return;
-        }
-    
-        const parsed = JSON.parse(message);
-        if (!!parsed.name) {
-          metadata.name = parsed.name;
-          clients.set(ws, metadata);
-          const resp = generalResponse(metadata);
-          resp.n = metadata.name;
-          ws.send(JSON.stringify(resp));
-        }
-      });
+      ws.on('message', (m) => {this.receivedMessage(m, ws)});
     
       ws.on("close", () => {
         clients.delete(ws);
@@ -77,6 +34,50 @@ class GameController {
     });
 
     console.log("wss up");
+  }
+
+  receivedMessage(message, ws) {
+    console.log("message received");
+    const metadata = this.clients.get(ws);
+    
+    if (message == "b") {
+      let now = Date.now();
+      if (now - coolDown < metadata.lastMove) {
+        return;
+      }
+      metadata.lastMove = now;
+      if (price > 100) {
+        metadata.score -= 10;
+      } else if (price < 100) {
+        metadata.score += 10;
+      }
+      price+=10;
+      scoreUpdate(ws, metadata);
+      return;
+    } else if (message == "s") {
+      let now = Date.now();
+      if (now - coolDown < metadata.lastMove) {
+        return;
+      }
+      metadata.lastMove = now;
+      if (price > 100) {
+        metadata.score += 10;
+      } else if (price < 100) {
+        metadata.score -= 10;
+      }
+      price-=10;
+      scoreUpdate(ws, metadata);
+      return;
+    }
+
+    const parsed = JSON.parse(message);
+    if (!!parsed.name) {
+      metadata.name = parsed.name;
+      this.clients.set(ws, metadata);
+      const resp = this.generalResponse(metadata);
+      resp.n = metadata.name;
+      ws.send(JSON.stringify(resp));
+    }
   }
 
   uuidv4() {
@@ -89,13 +90,13 @@ class GameController {
   scoreUpdate(ws, metadata) {
     clients.set(ws, metadata);
   
-    response = generalResponse(metadata);
+    response = this.generalResponse(metadata);
   
     blast(response);
   }
   
   generalResponse(metadata) {
-    const leaderboard = calculateLeaderboard()
+    const leaderboard = this.calculateLeaderboard()
   
     return {
       "p": price,
@@ -113,7 +114,7 @@ class GameController {
   }
   
   calculateLeaderboard() {
-    return [...clients.values()].map((client) => {
+    return [...this.clients.values()].map((client) => {
       return {
         "n": client.name,
         "s": client.score

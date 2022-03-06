@@ -20,7 +20,8 @@ class LineGame {
       shares: [],
       shorts: [],
       profit: 0,
-      lastMove: 0
+      lastMove: 0,
+      name: ""
     };
   }
 
@@ -40,6 +41,12 @@ class LineGame {
   // delta is time difference since last loop
   loop(delta) {
     console.log("hello,",delta, this.price);
+  }
+
+  averageOwnerships(ownerShips) {
+    const average = [...ownerShips].reduce((a, b) => a + b) / ownerShips.length;
+    ownerShips.fill(average);
+    return ownerShips;
   }
 }
 
