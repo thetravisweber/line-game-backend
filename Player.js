@@ -11,18 +11,39 @@ class Player {
   }
 
   collectOnShorts(currentPrice) {
+    console.log("collecting on " + this.shorts.length + " shorts");
     this.shorts.forEach(short => {
       this.profit += short - currentPrice;
     });
     this.shorts = [];
+    console.log(this.profit);
+  }
+
+  collectOnShares(currentPrice) {
+    console.log("collecting on " + this.shares.length + " shares");
+    this.shares.forEach(share => {
+      this.profit += currentPrice - share;
+    });
+    this.shorts = [];
+    console.log(this.profit);
   }
 
   notifyBoughtAt(price) {
     console.log(this.name, "bought");
+    if (this.shorts.length != 0) {
+      this.collectOnShorts(price);
+    } else {
+      this.shares.push(price);
+    }
   }
 
   notifySoldAt(price) {
     console.log(this.name, "sold");
+    if (this.shares.length != 0) {
+      this.collectOnShares(price);
+    } else {
+      this.shorts.push(price);
+    }
   }
 }
 
