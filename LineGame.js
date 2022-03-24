@@ -1,14 +1,18 @@
 const gl = require('node-gameloop');
 const pl = require('./Player.js');
 const NO_GAME_LOOP = -101;
+// in dollars per second
+const PRICE_CHANGE_RATE = 5;
+const MILLISECONDS_PER_SECOND = 1000;
 class LineGame {
   controller;
-  frameRate = 10;
+  frameRate = 60;
   price = 100;
   gameloopId = NO_GAME_LOOP;
   players = new Map();
   buyOrders = [];
   sellOrders = [];
+  
 
   constructor() {
     console.log("Line Game Created");
@@ -50,8 +54,9 @@ class LineGame {
     );
   }
 
-  adjustPrice(shares, timeDelta) {
-    this.price += 5 * shares * timeDelta;
+  adjustPrice(shares, timeDelta)
+  {  
+    this.price += PRICE_CHANGE_RATE * shares * timeDelta;
   }
 
   executeMarket() {
@@ -60,7 +65,7 @@ class LineGame {
       let buyerId = this.buyOrders[i].id;
       let sellerId = this.sellOrders[i].id;
       if (buyerId == sellerId) {
-        this.adjustPrice(1, (this.buyOrders[i].time-this.sellOrders[i].time)/100);
+        this.cancelOrders(i);
         continue;
       }
       let buyer = this.players.get(buyerId);
@@ -72,32 +77,36 @@ class LineGame {
     this.removeOrders(smallest);
   }
 
+  cancelOrders(orderIndex) {
+    let timeDelay = this.timeBetweenOrders(
+      this.buyOrders[orderIndex],
+      this.sellOrders[orderIndex]
+    );
+    this.adjustPrice(1, timeDelay);
+  }
+
   removeOrders(maxElement) {
     this.buyOrders.splice(0, maxElement);
     this.sellOrders.splice(0, maxElement);
   }
 
   playerWantsToBuy(id) {
-    this.buyOrders.push(
-      {
-        "id": id,
-        "time": Math.round(Date.now()/10)
-      }
-    );
+    this.buyOrders.push(this.makeOrder(id));
   }
 
   playerWantsToSellShort(id) {
-    this.sellOrders.push(
-      {
-        "id": id,
-        "time": Math.round(Date.now()/10)
-      }
-    );
+    this.sellOrders.push(this.makeOrder(id));
+  }
+
+  makeOrder(id) {
+    return {
+      "id": id,
+      "time": Date.now()
+    }
   }
 
   leaderBoard() {
     let leaderboard = [];
-    console.log(this.players);
     [...this.players.values()].forEach( player => {
       leaderboard.push(
         {
@@ -112,6 +121,10 @@ class LineGame {
   playerLeft(leavingPlayerId)
   {
     this.players.delete(leavingPlayerId);
+  }
+
+  timeBetweenOrders(buyOrder, sellOrder) {
+    return (buyOrder.time-sellOrder.time) / MILLISECONDS_PER_SECOND;
   }
 }
 
