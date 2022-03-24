@@ -13,6 +13,7 @@
   "author": "travisweber",
   "license": "MIT",
   "dependencies": {
+    "node-gameloop": "^0.1.4",
     "nodemon": "^2.0.15",
     "ws": "^8.5.0"
   }
