@@ -6,7 +6,7 @@ const PRICE_CHANGE_RATE = 5;
 const MILLISECONDS_PER_SECOND = 1000;
 class LineGame {
   controller;
-  frameRate = 60;
+  frameRate = 30;
   price = 100;
   gameloopId = NO_GAME_LOOP;
   players = new Map();
