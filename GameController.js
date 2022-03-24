@@ -1,6 +1,6 @@
 const WebSocket = require('ws');
-class GameController {
-  wss = new WebSocket.Server({ port: process.env.PORT || 5000 });
+class GameController {  
+  wss = new WebSocket.Server({ port: process.env.PORT || 5050 });
   clients = new Map();
   game;
 
@@ -16,7 +16,7 @@ class GameController {
   setup() {
     this.wss.on('connection', (ws) => {
       const id = this.uuidv4();
-      const metadata = { id};
+      const metadata = { id };
     
       this.clients.set(ws, metadata);
 
@@ -25,6 +25,8 @@ class GameController {
       ws.on('message', (m) => {this.receivedMessage(m, ws)});
     
       ws.on("close", () => {
+        const metadata = this.clients.get(ws);
+        this.game.playerLeft(metadata.id);
         this.clients.delete(ws);
         console.log("connection closed");
       });

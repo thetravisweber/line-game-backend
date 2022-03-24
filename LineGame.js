@@ -6,7 +6,7 @@ class LineGame {
   frameRate = 10;
   price = 100;
   gameloopId = NO_GAME_LOOP;
-  players = {};
+  players = new Map();
   buyOrders = [];
   sellOrders = [];
 
@@ -19,7 +19,7 @@ class LineGame {
   }
 
   addPlayer(id, name) {
-    this.players[id] = new pl.Player(name);
+    this.players.set(id, new pl.Player(name));
     this.startLoop();
     return true;
   }
@@ -91,17 +91,22 @@ class LineGame {
   }
 
   leaderBoard() {
-    let lb = [];
+    let leaderboard = [];
     console.log(this.players);
-    Object.values(this.players).forEach( player => {
-      lb.push(
+    [...this.players.values()].forEach( player => {
+      leaderboard.push(
         {
           "n": player.name,
           "s": player.profit
         }
       );
     });
-    return lb;
+    return leaderboard;
+  }
+
+  playerLeft(leavingPlayerId)
+  {
+    this.players.delete(leavingPlayerId);
   }
 }
 
