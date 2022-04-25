@@ -25,7 +25,6 @@ class Player {
       this.profit += currentPrice - share;
     });
     this.shorts = [];
-    console.log(this.profit);
   }
 
   notifyBoughtAt(price) {
@@ -53,4 +52,4 @@ function average(arr) {
   return arr;
 }
 
-module.exports.Player = Player;
+module.exports = Player;

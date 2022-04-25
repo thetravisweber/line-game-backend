@@ -1,4 +1,5 @@
 const WebSocket = require('ws');
+const DumbBot = require('./DumbBot.js');
 class GameController {  
   wss = new WebSocket.Server({ port: process.env.PORT || 5050 });
   clients = new Map();
@@ -30,6 +31,8 @@ class GameController {
         this.clients.delete(ws);
         console.log("connection closed");
       });
+
+      this.manageBots(this.clients.size);
     });
 
     console.log("wss up");
@@ -78,6 +81,21 @@ class GameController {
       var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
       return v.toString(16);
     });
+  }
+
+  manageBots(numberOfPlayers) {
+    if (numberOfPlayers == 1) {
+      // create 10 bots
+      for (let i = 0; i < 10; i++) {
+        let bot = new DumbBot();
+        this.game.addBot(bot);
+      }
+    }
+
+    if (numberOfPlayers > 5) {
+      // start deleting bots
+      this.game.removeABot();
+    }
   }
 }
 

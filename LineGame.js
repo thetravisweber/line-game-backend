@@ -1,5 +1,5 @@
 const gl = require('node-gameloop');
-const pl = require('./Player.js');
+const Player = require('./Player.js');
 const NO_GAME_LOOP = -101;
 // in dollars per second
 const PRICE_CHANGE_RATE = 5;
@@ -10,6 +10,7 @@ class LineGame {
   price = 100;
   gameloopId = NO_GAME_LOOP;
   players = new Map();
+  bots = [];
   buyOrders = [];
   sellOrders = [];
   
@@ -23,7 +24,7 @@ class LineGame {
   }
 
   addPlayer(id, name) {
-    this.players.set(id, new pl.Player(name));
+    this.players.set(id, new Player(name));
     this.startLoop();
     return true;
   }
@@ -125,6 +126,15 @@ class LineGame {
 
   timeBetweenOrders(buyOrder, sellOrder) {
     return (buyOrder.time-sellOrder.time) / MILLISECONDS_PER_SECOND;
+  }
+
+  addBot(bot) {
+    this.bots.push(bot);
+  }
+
+  deleteABot() {
+    if (this.bots.length == 0) return;
+    this.bots.splice(0, 1);
   }
 }
 
