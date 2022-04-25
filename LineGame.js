@@ -63,7 +63,7 @@ class LineGame {
 
   placeBotOrders(){
     this.bots.forEach((bot, index) => {
-      let order = bot.makeAMove();
+      let order = bot.makeAMove(this.price);
       if (order == 'b') {
         this.playerWantsToBuy(index);
       } else if (order == 's') {

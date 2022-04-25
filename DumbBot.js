@@ -3,12 +3,12 @@ const Player = require('./Player.js');
 class DumbBot extends Player {
   constructor() {
     super(genName());
-    this.actionBias = randomBetween(0, .05);
+    this.actionBias = randomBetween(0.1, .1);
   }
 
-  makeAMove() {
+  makeAMove(price) {
     if (Math.random() < this.actionBias) {
-      if (Math.random() < .5 && this.canBuy()) return "b";
+      if (Math.random() < 1 - (price / 200) && this.canBuy()) return "b";
       if (this.canSell()) return "s"
     }
     return '';
