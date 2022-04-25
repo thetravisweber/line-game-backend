@@ -94,7 +94,7 @@ class GameController {
 
     if (numberOfPlayers > 5) {
       // start deleting bots
-      this.game.removeABot();
+      this.game.deleteABot();
     }
   }
 }

@@ -134,6 +134,16 @@ class LineGame {
   playerLeft(leavingPlayerId)
   {
     this.players.delete(leavingPlayerId);
+    if (this.players.size == 0) {
+      this.reset();
+    }
+  }
+
+  reset() {
+    this.bots = [];
+    this.price = 100;
+    this.buyOrders = [];
+    this.sellOrders = [];
   }
 
   timeBetweenOrders(buyOrder, sellOrder) {
