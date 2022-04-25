@@ -44,6 +44,7 @@ class LineGame {
 
   // delta is time difference since last loop
   loop(delta) {
+    this.placeBotOrders();
     this.executeMarket();
     let difference = this.buyOrders.length - this.sellOrders.length;
     this.adjustPrice(difference, delta);
@@ -58,6 +59,17 @@ class LineGame {
   adjustPrice(shares, timeDelta)
   {  
     this.price += PRICE_CHANGE_RATE * shares * timeDelta;
+  }
+
+  placeBotOrders(){
+    this.bots.forEach((bot, index) => {
+      let order = bot.makeAMove();
+      if (order == 'b') {
+        this.playerWantsToBuy(index);
+      } else if (order == 's') {
+        this.playerWantsToSellShort(index);
+      }
+    })
   }
 
   executeMarket() {
