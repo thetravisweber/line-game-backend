@@ -24,7 +24,7 @@ class DumbBot extends Player {
 }
 
 function genName() {
-  return 'steve';
+  return "anon#" + Math.floor(randomBetween(1000, 9999));
 }
 
 function randomBetween(start, end) {

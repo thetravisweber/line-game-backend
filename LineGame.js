@@ -157,7 +157,7 @@ class LineGame {
     leaderboard.sort(function(a, b) {
       return b.s - a.s;
     });
-    return leaderboard;
+    return leaderboard.slice(0, 10);
   }
 
   playerLeft(leavingPlayerId)
