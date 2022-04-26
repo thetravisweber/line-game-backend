@@ -8,7 +8,8 @@ class DumbBot extends Player {
 
   makeAMove(price) {
     if (Math.random() < this.actionBias) {
-      if (Math.random() < 1 - (price / 200) && this.canBuy(price)) return "b";
+      let odds_of_buying = .5 + .3*(1 - (price / 200));
+      if (Math.random() < odds_of_buying && this.canBuy(price)) return "b";
       if (this.canSell(price)) return "s"
     }
     return '';
