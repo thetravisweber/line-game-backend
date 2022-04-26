@@ -20,23 +20,18 @@ class Player {
   }
 
   collectOnShares(currentPrice) {
-    console.log("collecting on " + 1 + " shares");
     let share = this.shares[0];
     this.profit += currentPrice - share;
     this.shares.splice(0, 1);
-    console.log(this.profit, share, currentPrice);
   }
 
   collectOnShorts(currentPrice) {
-    console.log("collecting on " + 1 + " shorts");
     let short = this.shorts[0];
     this.profit += short - currentPrice;
     this.shorts.splice(0, 1);
-    console.log(this.profit);
   }
 
   notifyBoughtAt(price) {
-    console.log(this.name, "bought");
     if (this.shorts.length > 0) {
       this.collectOnShorts(price);
     } else {
@@ -46,7 +41,6 @@ class Player {
   }
 
   notifySoldAt(price) {
-    console.log(this.name, "sold");
     if (this.shares.length != 0) {
       this.collectOnShares(price);
     } else {

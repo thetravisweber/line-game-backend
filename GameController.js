@@ -39,7 +39,6 @@ class GameController {
   }
 
   receivedMessage(message, ws) {
-    console.log("message received");
     const metadata = this.clients.get(ws);
     const id = metadata.id;
     
