@@ -86,9 +86,18 @@ class LineGame {
         this.cancelOrders(i);
         continue;
       }
-      let buyer = this.players.get(buyerId);
-      let seller = this.players.get(sellerId);
-      
+
+      let buyer, seller;
+      if (buyerId < 10) {
+        buyer = this.bots[buyerId]
+      } else {
+        buyer = this.players.get(buyerId);
+      }
+      if (sellerId < 10) {
+        seller = this.bots[sellerId]
+      } else {
+        seller = this.players.get(sellerId);
+      }
       if (!!buyer) buyer.notifyBoughtAt(this.price);
       if (!!seller) seller.notifySoldAt(this.price);
     }
