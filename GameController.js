@@ -95,7 +95,7 @@ class GameController {
   manageBots(numberOfPlayers) {
     if (numberOfPlayers == 1) {
       // create 5 bots
-      for (let i = 0; i < 1; i++) {
+      for (let i = 0; i < 7; i++) {
         let bot = new DumbBot();
         this.game.addBot(bot);
       }

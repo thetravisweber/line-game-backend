@@ -137,6 +137,14 @@ class LineGame {
         }
       );
     });
+    this.bots.forEach( bot => {
+      leaderboard.push(
+        {
+          "n": bot.name,
+          "s": bot.profit
+        }
+      );
+    });
     return leaderboard;
   }
 
