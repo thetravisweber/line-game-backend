@@ -68,6 +68,15 @@ class GameController {
     }
   }
 
+  blastUpdates() {
+    this.clients.forEach((metadata, client) => {
+      let update = this.game.getUpdate(metadata.id);
+      client.send(
+        JSON.stringify(update)
+      );
+    });
+  }
+
   blast(data) {
     [...this.clients.keys()].forEach((client) => {
       client.send(
@@ -86,7 +95,7 @@ class GameController {
   manageBots(numberOfPlayers) {
     if (numberOfPlayers == 1) {
       // create 5 bots
-      for (let i = 0; i < 7; i++) {
+      for (let i = 0; i < 1; i++) {
         let bot = new DumbBot();
         this.game.addBot(bot);
       }

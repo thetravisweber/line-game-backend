@@ -4,36 +4,45 @@ class Player {
   shorts = [];
   profit = 0;
   lastMove = 0;
+  orders = 0;
 
   constructor(_name) {
     this.name = _name;
     console.log("player made", this.name);
   }
 
-  collectOnShorts(currentPrice) {
-    console.log("collecting on " + this.shorts.length + " shorts");
-    this.shorts.forEach(short => {
-      this.profit += short - currentPrice;
-    });
-    this.shorts = [];
-    console.log(this.profit);
+  addOrder() {
+    this.orders++;
+  }
+
+  dropOrder() {
+    this.orders--;
   }
 
   collectOnShares(currentPrice) {
-    console.log("collecting on " + this.shares.length + " shares");
-    this.shares.forEach(share => {
-      this.profit += currentPrice - share;
-    });
-    this.shorts = [];
+    console.log("collecting on " + 1 + " shares");
+    let share = this.shares[0];
+    this.profit += currentPrice - share;
+    this.shares.splice(0, 1);
+    console.log(this.profit, share, currentPrice);
+  }
+
+  collectOnShorts(currentPrice) {
+    console.log("collecting on " + 1 + " shorts");
+    let short = this.shorts[0];
+    this.profit += short - currentPrice;
+    this.shorts.splice(0, 1);
+    console.log(this.profit);
   }
 
   notifyBoughtAt(price) {
     console.log(this.name, "bought");
-    if (this.shorts.length != 0) {
+    if (this.shorts.length > 0) {
       this.collectOnShorts(price);
     } else {
       this.shares.push(price);
     }
+    this.dropOrder();
   }
 
   notifySoldAt(price) {
@@ -43,6 +52,14 @@ class Player {
     } else {
       this.shorts.push(price);
     }
+    this.addOrder();
+  }
+
+  getSummary() {
+    return {
+      own: this.shares.length - this.shorts.length,
+      orders: this.orders
+    };
   }
 }
 

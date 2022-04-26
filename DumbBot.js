@@ -3,7 +3,7 @@ const Player = require('./Player.js');
 class DumbBot extends Player {
   constructor() {
     super(genName());
-    this.actionBias = randomBetween(0.02, .05);
+    this.actionBias = .02;
   }
 
   makeAMove(price) {

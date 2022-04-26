@@ -48,12 +48,17 @@ class LineGame {
     this.executeMarket();
     let difference = this.buyOrders.length - this.sellOrders.length;
     this.adjustPrice(difference, delta);
-    this.controller.blast(
-      {
-        "p": this.price,
-        "l": this.leaderBoard()
-      }
-    );
+    this.controller.blastUpdates();
+  }
+
+  getUpdate(id) {
+    let player = this.players.get(id);
+    if (!player) return {};
+    return {
+      p: this.price,
+      l: this.leaderBoard(),
+      sum: player.getSummary()
+    }
   }
 
   adjustPrice(shares, timeDelta)
@@ -105,10 +110,14 @@ class LineGame {
 
   playerWantsToBuy(id) {
     this.buyOrders.push(this.makeOrder(id));
+    let player = this.players.get(id);
+    if (!!player) player.addOrder();
   }
 
   playerWantsToSellShort(id) {
     this.sellOrders.push(this.makeOrder(id));
+    let player = this.players.get(id);
+    if (!!player) player.dropOrder();
   }
 
   makeOrder(id) {
