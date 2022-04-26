@@ -154,6 +154,13 @@ class LineGame {
         }
       );
     });
+    leaderboard.sort(function(a, b) {
+      return b.s - a.s;
+    });
+    if (Math.random() < .1) 
+    {
+      console.log(leaderboard);
+    }
     return leaderboard;
   }
 
